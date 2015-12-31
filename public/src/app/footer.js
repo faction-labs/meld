@@ -3,7 +3,7 @@ module.exports = React.createClass({
         return (
             <div className="ui middle aligned grid container center">
                 <div className="sixteen wide column footer">
-                    &copy; 2016 Meld Project
+                    &copy; 2016 Faction Labs
                 </div>
             </div>
         )
