@@ -44,3 +44,7 @@ a, .pointer {
     min-height: 100px;
   }
 }
+.setup {
+    margin: 0 auto 0 auto;
+    text-align: center;
+}

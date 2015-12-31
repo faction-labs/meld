@@ -1,1 +1,4 @@
 *.swp
+build/
+cmd/meld/meld
+cmd/meld/meld.exe

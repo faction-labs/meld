@@ -1,6 +1,5 @@
 var Menu = require("./menu.js")
-var Masthead = require("./masthead.js")
-var Welcome = require("./welcome.js")
+var Setup = require("./setup.js")
 var Footer = require("./footer.js")
 
 module.exports = React.createClass({
@@ -9,9 +8,7 @@ module.exports = React.createClass({
             <div className="pusher">
                 <Menu />
 
-                <Masthead />
-
-                <Welcome />
+                <Setup />
 
                 <Footer />
             </div>
