@@ -26,6 +26,7 @@ func (a *API) Run() error {
 	globalMux := http.NewServeMux()
 
 	r := mux.NewRouter()
+	r.HandleFunc("/api/version", a.version)
 	r.HandleFunc("/api/install/steam", a.installSteamCmd)
 	r.HandleFunc("/api/install/rust", a.installRust)
 	r.HandleFunc("/api/install/oxide", a.installOxide)

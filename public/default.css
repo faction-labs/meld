@@ -48,3 +48,11 @@ a, .pointer {
     margin: 0 auto 0 auto;
     text-align: center;
 }
+.about-text, .setup-text {
+    text-align: center;
+    width: 50%;
+    margin: 0 auto 0 auto;
+}
+.hide {
+    display: none;
+}

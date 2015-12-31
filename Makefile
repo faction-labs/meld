@@ -9,6 +9,11 @@ export GO15VENDOREXPERIMENT=1
 MEDIA_SRCS=$(shell find public/ -type f \
 	-not -path "public/dist/*" \
 	-not -path "public/node_modules/*")
+ifeq ($(GOOS), windows)
+    BIN_NAME=meld.exe
+else
+    BIN_NAME=meld
+endif
 
 all: media build
 
@@ -16,10 +21,10 @@ add-deps:
 	@godep save -t ./...
 
 build:
-	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" .
+	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" -o $(BIN_NAME) .
 
 build-static:
-	@cd cmd/$(APP) && go build -a -tags "netgo static_build" -installsuffix netgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" .
+	@cd cmd/$(APP) && go build -a -tags "netgo static_build" -installsuffix netgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" -o $(BIN_NAME) .
 
 dev-setup:
 	@echo "This could take a while..."
@@ -47,11 +52,13 @@ media-app:
 	@# add frontend ui components here
 	@cd public/src && browserify app/* -t babelify --outfile ../dist/bundle.js
 
-image:
+package:
 	@mkdir -p build
-	@cp -r cmd/$(APP)/$(APP) build/
+	@cp -r cmd/$(APP)/$(BIN_NAME) build/
 	@cp -r public build/
-	@rm -rf build/public/node_modules build/public/semantic/{gulpfile.js,src,tasks} build/public/semantic.json
+	@cd build/public && rm -rf node_modules package.json semantic semantic.theme semantic.theme.config src
+
+image: package
 	@docker build -t $(REPO):$(TAG) .
 
 release: image
@@ -61,7 +68,7 @@ test: build
 	@go test -v ./...
 
 clean:
-	@rm -rf cmd/$(APP)/$(APP)
+	@rm -rf cmd/$(APP)/$(BIN_NAME)
 	@rm -rf build
 	@rm -rf public/dist
 

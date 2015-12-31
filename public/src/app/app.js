@@ -1,4 +1,5 @@
 var Splash = require("./splash.js");
+var Setup = require("./setup.js");
 var NotFound = require("./notfound.js");
 
 var RouterMixin = require('react-mini-router').RouterMixin;
@@ -6,7 +7,8 @@ var RouterMixin = require('react-mini-router').RouterMixin;
 var App = React.createClass({
     mixins: [RouterMixin],
     routes: {
-        '/': 'home'
+        '/': 'home',
+        '/setup': 'setup'
     },
     render: function() {
         return this.renderCurrentRoute();
@@ -14,6 +16,11 @@ var App = React.createClass({
     home: function() {
         return (
             <Splash />
+        )
+    },
+    setup: function() {
+        return (
+            <Setup />
         )
     },
     notFound: function(path) {

@@ -14,10 +14,14 @@ import (
 )
 
 const (
-	steamDefaultDir = "C:\\steam"
-	rustDefaultDir  = "C:\\rust"
-	steamCmdURL     = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
-	oxideURL        = "https://github.com/OxideMod/Snapshots/raw/master/Oxide-Rust.zip"
+	baseDefaultDir = "C:\\meld"
+	steamCmdURL    = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+	oxideURL       = "https://github.com/OxideMod/Snapshots/raw/master/Oxide-Rust.zip"
+)
+
+var (
+	steamDefaultDir = filepath.Join(baseDefaultDir, "steam")
+	rustDefaultDir  = filepath.Join(baseDefaultDir, "rust")
 )
 
 // unzip file into the dest
