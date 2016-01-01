@@ -4,6 +4,8 @@ var api = require("../api/api.js");
 module.exports = React.createClass({
     getInitialState: function() {
         return {
+            loading: false,
+            loadingText: "",
             result: null,
             error: null
         }
@@ -13,7 +15,9 @@ module.exports = React.createClass({
         console.log("installing rust");
         this.setState({
             result: null,
-            error: null
+            error: null,
+            loading: true,
+            loadingText: "Installing Rust.  Please wait.  This may take a while."
         });
 
         // make sure steam is installed
@@ -22,13 +26,22 @@ module.exports = React.createClass({
                 // install rust
                 api("/api/install/rust", function(xhr, status){
                     if (xhr.status === 200) {
-                        this.setState({result: xhr.responseText});
+                        this.setState({
+                            result: xhr.responseText,
+                            loading: false
+                        });
                     } else {
-                        this.setState({error: xhr.responseText});
+                        this.setState({
+                            error: xhr.responseText,
+                            loading: false
+                        });
                     }
                 }.bind(this));
             } else {
-                this.setState({error: xhr.responseText});
+                this.setState({
+                    error: xhr.responseText,
+                    loading: false
+                });
             }
         }.bind(this));
     },
@@ -36,21 +49,34 @@ module.exports = React.createClass({
         console.log("installing oxide");
         this.setState({
             result: null,
-            error: null
+            error: null,
+            loading: true,
+            loadingText: "Installing Oxide.  Please wait.  This may take a while."
         });
 
         // install oxide
         api("/api/install/oxide", function(xhr, status){
             if (xhr.status === 200) {
-                this.setState({result: xhr.responseText});
+                this.setState({
+                    result: xhr.responseText,
+                    loading: false
+                });
             } else {
-                this.setState({error: xhr.responseText});
+                this.setState({
+                    error: xhr.responseText,
+                    loading: false
+                });
             }
         }.bind(this));
     },
     render: function () {
         return (
             <div className="ui row setup">
+                { this.state.loading &&
+                    <div className="ui active dimmer">
+                        <div className="ui indeterminate text loader">{this.state.loadingText}</div>
+                    </div>
+                }
                 <img src="./assets/images/setup.png" />
 
                 <br />
