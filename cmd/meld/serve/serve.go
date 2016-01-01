@@ -22,6 +22,11 @@ var Command = cli.Command{
 			Usage: "path to public media directory",
 			Value: "public",
 		},
+		cli.StringFlag{
+			Name:  "db-path, d",
+			Usage: "path to meld db",
+			Value: "meld.db",
+		},
 	},
 }
 
@@ -30,10 +35,12 @@ func serveAction(c *cli.Context) {
 
 	listenAddr := c.String("listen")
 	publicDir := c.String("public-dir")
+	dbPath := c.String("db-path")
 
 	cfg := &api.APIConfig{
 		ListenAddr: listenAddr,
 		PublicDir:  publicDir,
+		DBPath:     dbPath,
 	}
 
 	a, err := api.NewAPI(cfg)

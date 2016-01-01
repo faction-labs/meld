@@ -1,4 +1,4 @@
-package steam
+package utils
 
 import (
 	"os"
@@ -14,7 +14,7 @@ const (
 
 func GetSteamCmdPath(destPath string) (string, error) {
 	if destPath == "" {
-		destPath = steamDefaultDir
+		destPath = SteamDefaultDir
 	}
 
 	p := filepath.Join(destPath, steamCmdName)

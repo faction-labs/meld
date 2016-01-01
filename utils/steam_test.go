@@ -1,4 +1,4 @@
-package steam
+package utils
 
 import (
 	"io/ioutil"
@@ -53,7 +53,7 @@ func TestInstallRust(t *testing.T) {
 	}
 
 	// install rust
-	if err := InstallRust(destPath, tempDir); err != nil {
+	if err := InstallRust(destPath, tempDir, false); err != nil {
 		t.Error(err)
 		return
 	}

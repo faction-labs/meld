@@ -6,7 +6,7 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/factionlabs/meld/utils/steam"
+	"github.com/factionlabs/meld/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -14,18 +14,23 @@ func (a *API) installSteamCmd(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	steamDir := vars["path"]
 
+	// default dirs if none specified
+	if steamDir == "" {
+		steamDir = utils.SteamDefaultDir
+	}
+
 	// check for existing
-	_, err := steam.GetSteamCmdPath(steamDir)
+	_, err := utils.GetSteamCmdPath(steamDir)
 	if err != nil {
 		if os.IsNotExist(err) {
 			// install
-			if err := steam.InstallSteamCmd(steamDir); err != nil {
+			if err := utils.InstallSteamCmd(steamDir); err != nil {
 				log.Error(err)
 				http.Error(w, fmt.Sprintf("error installing steam cmd: %s", err), http.StatusInternalServerError)
 				return
 			}
 
-			if _, err := steam.GetSteamCmdPath(steamDir); err != nil {
+			if _, err := utils.GetSteamCmdPath(steamDir); err != nil {
 				log.Error(err)
 				http.Error(w, fmt.Sprintf("error finding steam cmd after install: %s", err), http.StatusInternalServerError)
 				return
@@ -37,6 +42,13 @@ func (a *API) installSteamCmd(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// update db
+	if err := a.db.Set(dbBucketConfig, dbKeySteamCmdPath, []byte(steamDir)); err != nil {
+		log.Error(err)
+		http.Error(w, fmt.Sprintf("error updating configuration: %s", err), http.StatusInternalServerError)
+		return
+	}
+
 	w.Write([]byte("steam cmd installed successfully"))
 }
 
@@ -45,17 +57,33 @@ func (a *API) installRust(w http.ResponseWriter, r *http.Request) {
 	steamDir := vars["steampath"]
 	rustDir := vars["path"]
 
+	// default dirs if none specified
+	if steamDir == "" {
+		steamDir = utils.SteamDefaultDir
+	}
+
+	if rustDir == "" {
+		rustDir = utils.RustDefaultDir
+	}
+
 	// check for existing
-	steamCmdPath, err := steam.GetSteamCmdPath(steamDir)
+	steamCmdPath, err := utils.GetSteamCmdPath(steamDir)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("error finding steam cmd: %s; perhaps try to install it", err), http.StatusInternalServerError)
 		return
 	}
 
-	if err := steam.InstallRust(steamCmdPath, rustDir, false); err != nil {
+	if err := utils.InstallRust(steamCmdPath, rustDir, false); err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("error installing rust: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	// update db
+	if err := a.db.Set(dbBucketConfig, dbKeyRustPath, []byte(rustDir)); err != nil {
+		log.Error(err)
+		http.Error(w, fmt.Sprintf("error updating configuration: %s", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -67,17 +95,33 @@ func (a *API) updateRust(w http.ResponseWriter, r *http.Request) {
 	steamDir := vars["steampath"]
 	rustDir := vars["path"]
 
+	// default dirs if none specified
+	if steamDir == "" {
+		steamDir = utils.SteamDefaultDir
+	}
+
+	if rustDir == "" {
+		rustDir = utils.RustDefaultDir
+	}
+
 	// check for existing
-	steamCmdPath, err := steam.GetSteamCmdPath(steamDir)
+	steamCmdPath, err := utils.GetSteamCmdPath(steamDir)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("error finding steam cmd: %s; perhaps try to install it", err), http.StatusInternalServerError)
 		return
 	}
 
-	if err := steam.InstallRust(steamCmdPath, rustDir, true); err != nil {
+	if err := utils.InstallRust(steamCmdPath, rustDir, true); err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("error updating rust: %s", err), http.StatusInternalServerError)
+		return
+	}
+
+	// update db
+	if err := a.db.Set(dbBucketConfig, dbKeyRustPath, []byte(rustDir)); err != nil {
+		log.Error(err)
+		http.Error(w, fmt.Sprintf("error updating configuration: %s", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -88,7 +132,12 @@ func (a *API) installOxide(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rustDir := vars["path"]
 
-	if err := steam.InstallOxideMod(rustDir); err != nil {
+	// default dirs if none specified
+	if rustDir == "" {
+		rustDir = utils.RustDefaultDir
+	}
+
+	if err := utils.InstallOxideMod(rustDir); err != nil {
 		log.Error(err)
 		http.Error(w, fmt.Sprintf("error installing oxide: %s", err), http.StatusInternalServerError)
 		return

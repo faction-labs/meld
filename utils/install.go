@@ -1,4 +1,4 @@
-package steam
+package utils
 
 import (
 	"archive/zip"
@@ -11,17 +11,6 @@ import (
 	"syscall"
 
 	log "github.com/Sirupsen/logrus"
-)
-
-const (
-	baseDefaultDir = "C:\\meld"
-	steamCmdURL    = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
-	oxideURL       = "https://github.com/OxideMod/Snapshots/raw/master/Oxide-Rust.zip"
-)
-
-var (
-	steamDefaultDir = filepath.Join(baseDefaultDir, "steam")
-	rustDefaultDir  = filepath.Join(baseDefaultDir, "rust")
 )
 
 // unzip file into the dest
@@ -72,14 +61,11 @@ func unzip(src, dest string) error {
 
 // InstallSteamCmd installs the Steam CMD utility at the destination path
 func InstallSteamCmd(destPath string) error {
-	log.Infof("downloading steamcmd: url=%s", steamCmdURL)
-
-	if destPath == "" {
-		destPath = steamDefaultDir
-		if err := os.MkdirAll(destPath, 0755); err != nil {
-			return err
-		}
+	if err := os.MkdirAll(destPath, 0755); err != nil {
+		return err
 	}
+
+	log.Infof("downloading steamcmd: url=%s", steamCmdURL)
 
 	destFile := filepath.Join(destPath, "steamcmd.zip")
 	d, err := os.Create(destFile)
@@ -115,10 +101,6 @@ func InstallSteamCmd(destPath string) error {
 }
 
 func InstallRust(steamCmdPath, destPath string, update bool) error {
-	if destPath == "" {
-		destPath = rustDefaultDir
-	}
-
 	// check for existing rust
 	rustExe := filepath.Join(destPath, rustCmdName)
 
@@ -171,17 +153,13 @@ func InstallRust(steamCmdPath, destPath string, update bool) error {
 }
 
 func InstallOxideMod(rustPath string) error {
-	if rustPath == "" {
-		rustPath = rustDefaultDir
-	}
-
-	log.Infof("downloading latest oxide snapshot: url=%s", oxideURL)
-
 	destFile := filepath.Join(rustPath, "oxide.zip")
 	d, err := os.Create(destFile)
 	if err != nil {
 		return err
 	}
+
+	log.Infof("downloading latest oxide snapshot: url=%s", oxideURL)
 
 	resp, err := http.Get(oxideURL)
 	if err != nil {
