@@ -43,7 +43,7 @@ func (r *RustServer) Status() (*ServerStatus, error) {
 			status.Map = strings.TrimSpace(m)
 		}
 		if strings.Index(t, "players") > -1 {
-			m := strings.Join(val, " ")
+			m := val[1]
 			p, err := strconv.Atoi(strings.TrimSpace(m))
 			if err != nil {
 				log.Errorf("unable to parse players from status: %s", err)
