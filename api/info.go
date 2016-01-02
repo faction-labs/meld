@@ -1,12 +1,20 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/factionlabs/meld/version"
 )
+
+type InstallInfo struct {
+	Name         string `json:"name"`
+	Version      string `json:"version"`
+	SteamCMDPath string `json:"steamCMDPath"`
+	RustPath     string `json:"rustPath"`
+}
 
 func (a *API) info(w http.ResponseWriter, r *http.Request) {
 	steamPath, err := a.db.Get(dbBucketConfig, dbKeySteamCmdPath)
@@ -16,10 +24,6 @@ func (a *API) info(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if steamPath == nil {
-		steamPath = []byte("not installed")
-	}
-
 	rustPath, err := a.db.Get(dbBucketConfig, dbKeyRustPath)
 	if err != nil {
 		log.Error(err)
@@ -27,15 +31,16 @@ func (a *API) info(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if rustPath == nil {
-		rustPath = []byte("not installed")
+	info := InstallInfo{
+		Name:         version.FullName(),
+		Version:      version.FullVersion(),
+		SteamCMDPath: string(steamPath),
+		RustPath:     string(rustPath),
 	}
 
-	info := fmt.Sprintf(`
-%s %s
-SteamCMD Path: %s
-Rust Path: %s
-`, version.FullName(), version.FullVersion(), steamPath, rustPath)
-
-	w.Write([]byte(info))
+	if err := json.NewEncoder(w).Encode(info); err != nil {
+		log.Error(err)
+		http.Error(w, fmt.Sprintf("error encoding: %s", err), http.StatusInternalServerError)
+		return
+	}
 }

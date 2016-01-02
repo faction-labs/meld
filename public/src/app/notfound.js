@@ -1,5 +1,4 @@
 var Menu = require('./menu.js');
-var Footer = require('./footer.js');
 
 var Missing = React.createClass({
     render() {
@@ -23,8 +22,6 @@ module.exports = React.createClass({
                 <Menu />
 
                 <Missing path={this.props.path} />
-
-                <Footer />
             </div>
         )
     }

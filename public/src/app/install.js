@@ -1,18 +1,25 @@
 var React = require('react');
 var api = require("../api/api.js");
+var navigate = require('react-mini-router').navigate;
 
 module.exports = React.createClass({
     getInitialState: function() {
         return {
             loading: false,
             loadingText: "",
+            rustSetup: false,
+            oxideSetup: false,
             result: null,
             error: null
         }
     },
     componentDidMount() {},
+    checkState: function() {
+        if (this.state.rustSetup && this.state.oxideSetup) {
+            navigate("/");
+        }
+    },
     handleInstallRust: function(path) {
-        console.log("installing rust");
         this.setState({
             result: null,
             error: null,
@@ -28,11 +35,15 @@ module.exports = React.createClass({
                     if (xhr.status === 200) {
                         this.setState({
                             result: xhr.responseText,
+                            rustSetup: true,
                             loading: false
                         });
+
+                        this.checkState();
                     } else {
                         this.setState({
                             error: xhr.responseText,
+                            rustSetup: false,
                             loading: false
                         });
                     }
@@ -46,7 +57,6 @@ module.exports = React.createClass({
         }.bind(this));
     },
     handleInstallOxide: function(path) {
-        console.log("installing oxide");
         this.setState({
             result: null,
             error: null,
@@ -59,11 +69,15 @@ module.exports = React.createClass({
             if (xhr.status === 200) {
                 this.setState({
                     result: xhr.responseText,
+                    oxideSetup: true,
                     loading: false
                 });
+                
+                this.checkState();
             } else {
                 this.setState({
                     error: xhr.responseText,
+                    oxideSetup: false,
                     loading: false
                 });
             }

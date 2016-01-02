@@ -2,7 +2,7 @@
   display: none;
 }
 .pusher {
-    padding-top: 64px;
+    padding-top: 54px;
 }
 .main-content {
     margin: 20px;
@@ -31,9 +31,6 @@ a, .pointer {
 }
 .ui.dropdown.usermenu {
     margin-right: 20px;
-}
-.footer {
-    margin-top: 10em;
 }
 .logo {
     width: 100%;
