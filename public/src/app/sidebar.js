@@ -16,7 +16,7 @@ module.exports = React.createClass({
         // for some reason the events below won't fire on the <i> unless
         // onClick is added.  teach me how to React :(
         return (
-            <div className="ui labeled icon left inline vertical sidebar menu uncover visible">
+            <div className="ui labeled icon thin left inline vertical sidebar menu uncover visible">
                 <a onClick={this.click.bind(this, "/")}  className="item">
                     <i onClick={this.click.bind(this, "/")}  className="dashboard icon"></i> Dashboard
                 </a>

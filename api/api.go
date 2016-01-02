@@ -5,6 +5,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	mdb "github.com/factionlabs/meld/db"
+	"github.com/factionlabs/meld/pkg/rust"
 	"github.com/gorilla/mux"
 )
 
@@ -15,14 +16,17 @@ const (
 )
 
 type API struct {
-	config *APIConfig
-	db     *mdb.DB
+	config     *APIConfig
+	db         *mdb.DB
+	rustServer *rust.RustServer
 }
 
 type APIConfig struct {
-	ListenAddr string
-	PublicDir  string
-	DBPath     string
+	ListenAddr   string
+	PublicDir    string
+	DBPath       string
+	RconAddress  string
+	RconPassword string
 }
 
 func NewAPI(config *APIConfig) (*API, error) {
@@ -42,11 +46,25 @@ func (a *API) Run() error {
 
 	a.db = bdb
 
+	rustConfig := &rust.RustServerConfig{
+		RconAddress:  a.config.RconAddress,
+		RconPassword: a.config.RconPassword,
+	}
+
+	srv, err := rust.NewRustServer(rustConfig)
+	if err != nil {
+		return err
+	}
+
+	a.rustServer = srv
+
 	globalMux := http.NewServeMux()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/api/version", a.version)
 	r.HandleFunc("/api/info", a.info)
+	r.HandleFunc("/api/rust/status", a.rustStatus)
+	r.HandleFunc("/api/rust/exec", a.rustExec)
 	r.HandleFunc("/api/install/steam", a.installSteamCmd)
 	r.HandleFunc("/api/install/rust", a.installRust)
 	r.HandleFunc("/api/install/oxide", a.installOxide)

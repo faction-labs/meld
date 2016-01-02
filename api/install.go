@@ -7,12 +7,10 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/factionlabs/meld/utils"
-	"github.com/gorilla/mux"
 )
 
 func (a *API) installSteamCmd(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	steamDir := vars["path"]
+	steamDir := r.URL.Query().Get("steampath")
 
 	// default dirs if none specified
 	if steamDir == "" {
@@ -53,9 +51,8 @@ func (a *API) installSteamCmd(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) installRust(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	steamDir := vars["steampath"]
-	rustDir := vars["path"]
+	steamDir := r.URL.Query().Get("steampath")
+	rustDir := r.URL.Query().Get("rustpath")
 
 	// default dirs if none specified
 	if steamDir == "" {
@@ -91,9 +88,8 @@ func (a *API) installRust(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) updateRust(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	steamDir := vars["steampath"]
-	rustDir := vars["path"]
+	steamDir := r.URL.Query().Get("steampath")
+	rustDir := r.URL.Query().Get("rustpath")
 
 	// default dirs if none specified
 	if steamDir == "" {
@@ -129,8 +125,7 @@ func (a *API) updateRust(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *API) installOxide(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	rustDir := vars["path"]
+	rustDir := r.URL.Query().Get("rustpath")
 
 	// default dirs if none specified
 	if rustDir == "" {
