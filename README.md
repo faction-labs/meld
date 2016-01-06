@@ -1,27 +1,51 @@
 # Meld
+Game Server Management Platform
 
-# Prerequisites
-You must have the following:
+# Prequisites
+To get a local setup you will need [Go](http://golang.org) and 
+[npm](https://www.npmjs.com/).  On Linux, it is recommended to use 
+[nvm](https://github.com/creationix/nvm).  On Mac, you should be able to 
+`brew install npm`.
 
-- [npm](https://www.npmjs.com/) (tested on v0.12.3)
-- [go](http://golang.org) (tested with 1.5)
-
-# Setup
-To get started, clone the repo and run:
+# Local Setup
+After getting the prereqs, you can run the following to get a local dev
+setup:
 
 `make dev-setup`
 
-That will take a while as it has to get the npm dependencies and build the
-native libs for media and JS compilation.
+This will take a while depending on your system to compile all of the Node 
+dependencies needed to build the frontend application.
 
-After that finishes, you should be able to run the following to build the
-project:
+# Build
+Use the `Makefile`
 
-`make`
+To build everything, simply run:
 
-That should compile the media, js and build the Go binary.  Once finished,
-you can run the following to start the server:
+- `make`
 
-`./cmd/<name>/<name> serve`
+To build the media only:
 
-You should then be able to visit http://localhost:8080 to see the app.
+- `make media`
+
+To build the Go binary only:
+
+- `make build`
+
+# Database
+RethinkDB is used for the database.  You can use Docker to run a local
+database.  Lighthouse will create an initial admin user and will output
+a random password in the console.  To run a local RethinkDB instance using
+Docker:
+
+`docker run -ti --restart=always --name db -P rethinkdb`
+
+You can then run `docker ps` to get the port for Meld.  You will need
+the allocated port for the container port `28015`.
+
+# Controller
+Once the database is started you can run the app.  Use the high port from
+the RethinkDB container as the argument to the controller:
+
+`./cmd/meld/meld -D serve`
+
+You should then be able to access Meld on port 8080.

@@ -1,4 +1,4 @@
 *.swp
 meld.db
 build/
-cmd/meld/meld
+public/node_modules

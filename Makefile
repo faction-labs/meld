@@ -2,35 +2,30 @@ CGO_ENABLED=0
 GOOS=linux
 GOARCH=amd64
 COMMIT=`git rev-parse --short HEAD`
-APP=meld
+APP?=meld
 REPO?=factionlabs/$(APP)
 TAG?=latest
 export GO15VENDOREXPERIMENT=1
 MEDIA_SRCS=$(shell find public/ -type f \
 	-not -path "public/dist/*" \
 	-not -path "public/node_modules/*")
-ifeq ($(GOOS), windows)
-    BIN_NAME=meld.exe
-else
-    BIN_NAME=meld
-endif
 
-all: media build
+all: media build image
 
 add-deps:
-	@godep save -t ./...
+	@godep save
+	@rm -rf Godeps
 
 build:
-	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" -o $(BIN_NAME) .
+	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)version.GitCommit=$(COMMIT)" .
 
 build-static:
-	@cd cmd/$(APP) && go build -a -tags "netgo static_build" -installsuffix netgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" -o $(BIN_NAME) .
+	@cd cmd/$(APP) && go build -a -tags "netgo static_build" -installsuffix netgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" .
 
 dev-setup:
 	@echo "This could take a while..."
-	@npm install --loglevel verbose -g gulp browserify babelify
-	@cd public && npm install --loglevel verbose
-	@cd public/node_modules/semantic-ui && gulp install
+	@npm install -g gulp browserify babelify
+	@cd public && npm install
 
 media: media-semantic media-app
 
@@ -50,26 +45,31 @@ media-app:
 	@mkdir -p public/dist
 	@cd public && rm -rf dist/bundle.js
 	@# add frontend ui components here
-	@cd public/src && browserify app/* -t babelify --outfile ../dist/bundle.js
+	@cd public/src && browserify app/* dashboard/* -t babelify --outfile ../dist/bundle.js
 
-package:
+image: build-static
 	@mkdir -p build
-	@cp -r cmd/$(APP)/$(BIN_NAME) build/
+	@cp -r cmd/$(APP)/$(APP) build/
 	@cp -r public build/
-	@cd build/public && rm -rf node_modules package.json semantic semantic.theme semantic.theme.config src
-
-image: package
+	@rm -rf build/public/node_modules build/public/semantic/{gulpfile.js,src,tasks} build/public/semantic.json
 	@docker build -t $(REPO):$(TAG) .
 
 release: image
 	@docker push $(REPO):$(TAG)
 
+package:
+	@mkdir -p build
+	@cp -r cmd/$(APP)/$(APP) build/
+	@cp -r public build/
+	@cd build/public && rm -rf node_modules package.json semantic semantic.theme semantic.theme.config src
+
 test: build
 	@go test -v ./...
 
 clean:
-	@rm -rf cmd/$(APP)/$(BIN_NAME)
+	@rm cmd/$(APP)/$(APP)
+	@rm .build_timestamp
 	@rm -rf build
-	@rm -rf public/dist
+	@rm -rf public/dist/*
 
 .PHONY: add-deps build build-static dev-setup media media-semantic media-app image release test clean

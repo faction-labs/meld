@@ -4,17 +4,10 @@
 .pusher {
     padding-top: 54px;
 }
+.main-content {
+}
 a, .pointer {
     cursor: pointer;
-}
-.masthead-header {
-    padding-top: 10px;
-    margin: 0 auto 20px auto;
-    min-height: 400px;
-    background-color: #dedede;
-}
-.masthead-header img {
-    width: 101%;
 }
 .login, .signup {
     margin-top: 30px;
@@ -37,16 +30,4 @@ a, .pointer {
   .notfound {
     min-height: 100px;
   }
-}
-.setup {
-    margin: 0 auto 0 auto;
-    text-align: center;
-}
-.about-text, .setup-text {
-    text-align: center;
-    width: 50%;
-    margin: 0 auto 0 auto;
-}
-.hide {
-    display: none;
 }

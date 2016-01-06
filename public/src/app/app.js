@@ -1,5 +1,7 @@
 var Splash = require("./splash.js");
-var Setup = require("./setup.js");
+var Login = require("./login.js");
+var Signup = require("./signup.js");
+var Dashboard = require("../dashboard/dashboard.js");
 var NotFound = require("./notfound.js");
 
 var RouterMixin = require('react-mini-router').RouterMixin;
@@ -8,7 +10,9 @@ var App = React.createClass({
     mixins: [RouterMixin],
     routes: {
         '/': 'home',
-        '/setup': 'setup'
+        '/login': 'login',
+        '/signup': 'signup',
+        '/dashboard': 'dashboard'
     },
     render: function() {
         return this.renderCurrentRoute();
@@ -18,9 +22,19 @@ var App = React.createClass({
             <Splash />
         )
     },
-    setup: function() {
+    login: function() {
         return (
-            <Setup />
+            <Login />
+        )
+    },
+    signup: function() {
+        return (
+            <Signup />
+        )
+    },
+    dashboard: function() {
+        return (
+            <Dashboard />
         )
     },
     notFound: function(path) {
