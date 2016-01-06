@@ -18,16 +18,6 @@ var Command = cli.Command{
 			Value: ":8080",
 		},
 		cli.StringFlag{
-			Name:  "rcon-address",
-			Usage: "rcon address",
-			Value: "127.0.0.1:28016",
-		},
-		cli.StringFlag{
-			Name:  "rcon-password",
-			Usage: "rcon password",
-			Value: "m3ld",
-		},
-		cli.StringFlag{
 			Name:  "public-dir, s",
 			Usage: "path to public media directory",
 			Value: "public",
@@ -46,15 +36,11 @@ func serveAction(c *cli.Context) {
 	listenAddr := c.String("listen")
 	publicDir := c.String("public-dir")
 	dbPath := c.String("db-path")
-	rconAddress := c.String("rcon-address")
-	rconPassword := c.String("rcon-password")
 
 	cfg := &api.APIConfig{
-		ListenAddr:   listenAddr,
-		PublicDir:    publicDir,
-		DBPath:       dbPath,
-		RconAddress:  rconAddress,
-		RconPassword: rconPassword,
+		ListenAddr: listenAddr,
+		PublicDir:  publicDir,
+		DBPath:     dbPath,
 	}
 
 	a, err := api.NewAPI(cfg)
