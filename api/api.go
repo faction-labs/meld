@@ -5,28 +5,22 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	mdb "github.com/factionlabs/meld/db"
-	"github.com/factionlabs/meld/pkg/rust"
 	"github.com/gorilla/mux"
 )
 
 const (
-	dbBucketConfig    = "config"
-	dbKeySteamCmdPath = "config.steamcmd.path"
-	dbKeyRustPath     = "config.rust.path"
+	dbBucketConfig = "config"
 )
 
 type API struct {
-	config     *APIConfig
-	db         *mdb.DB
-	rustServer *rust.RustServer
+	config *APIConfig
+	db     *mdb.DB
 }
 
 type APIConfig struct {
-	ListenAddr   string
-	PublicDir    string
-	DBPath       string
-	RconAddress  string
-	RconPassword string
+	ListenAddr string
+	PublicDir  string
+	DBPath     string
 }
 
 func NewAPI(config *APIConfig) (*API, error) {
@@ -46,29 +40,10 @@ func (a *API) Run() error {
 
 	a.db = bdb
 
-	rustConfig := &rust.RustServerConfig{
-		RconAddress:  a.config.RconAddress,
-		RconPassword: a.config.RconPassword,
-	}
-
-	srv, err := rust.NewRustServer(rustConfig)
-	if err != nil {
-		return err
-	}
-
-	a.rustServer = srv
-
 	globalMux := http.NewServeMux()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/api/version", a.version)
-	r.HandleFunc("/api/info", a.info)
-	r.HandleFunc("/api/rust/status", a.rustStatus)
-	r.HandleFunc("/api/rust/exec", a.rustExec)
-	r.HandleFunc("/api/install/steam", a.installSteamCmd)
-	r.HandleFunc("/api/install/rust", a.installRust)
-	r.HandleFunc("/api/install/oxide", a.installOxide)
-	r.HandleFunc("/api/update/rust", a.updateRust)
 
 	// static handler
 	globalMux.Handle("/", http.FileServer(http.Dir(a.config.PublicDir)))
