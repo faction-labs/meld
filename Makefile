@@ -17,7 +17,7 @@ add-deps:
 	@rm -rf Godeps
 
 build:
-	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)version.GitCommit=$(COMMIT)" .
+	@cd cmd/$(APP) && go build -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" .
 
 build-static:
 	@cd cmd/$(APP) && go build -a -tags "netgo static_build" -installsuffix netgo -ldflags "-w -X github.com/$(REPO)/version.GitCommit=$(COMMIT)" .
